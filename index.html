@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리집 주간 활동 일정표</title>
+    <link rel="stylesheet" href="calendar.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    <script src="supabase.js"></script>
+    <!-- <script type="module" src="https://sclass0614.github.io/authCheck/authCheck.js"></script> -->
+    
+</head>
+<body>
+    <div class="control-panel">
+        <div class="date-container">
+            <div class="input-group">
+                <label for="startWeek">시작 주차</label>
+                <input type="week" id="startWeek" class="date-input">
+            </div>
+            <div class="input-group">
+                <label for="endWeek">종료 주차</label>
+                <input type="week" id="endWeek" class="date-input">
+            </div>
+            <button id="generateCalendar" class="print-button">일정표 생성</button>
+            <button id="printCalendar" class="print-button">인쇄하기</button>
+        </div>
+    </div>
+
+    <div id="calendarContainer"></div>
+
+    <!-- 알림 모달 -->
+    <div id="alertModal" class="custom-alert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-header">
+                <i class="alert-icon">⚠️</i>
+                <span id="alertTitle">알림</span>
+                <button class="close-alert">&times;</button>
+            </div>
+            <div class="custom-alert-body">
+                <p id="alertMessage"></p>
+            </div>
+            <div class="custom-alert-footer">
+                <button class="alert-confirm-btn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 확인 모달 -->
+    <div id="confirmModal" class="custom-alert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-header">
+                <i class="alert-icon">❓</i>
+                <span id="confirmTitle">확인</span>
+                <button class="close-alert">&times;</button>
+            </div>
+            <div class="custom-alert-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="custom-alert-footer">
+                <button id="confirmCancel" class="alert-cancel-btn">취소</button>
+                <button id="confirmOk" class="alert-confirm-btn">확인</button>
+            </div>
+        </div>
+    </div>
+    <script src="calendar.js"></script>
+</body>
+</html> 
