@@ -1,0 +1,836 @@
+/* ============== 기본 페이지 설정 ============== */
+/* A4 용지 크기 및 여백 설정 - 가로 모드 */
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+
+/* 기본 본문 스타일 설정 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.5;
+    position: relative;
+}
+
+/* 배경 이미지 설정 - 워터마크 효과 */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://i.ibb.co/HTQksZ7k/3.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50%;
+    opacity: 0.1;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 로딩 표시기 스타일 */
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* ============== 애니메이션 정의 ============== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 컨트롤 패널 스타일 */
+.control-panel {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.date-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.date-input:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* 버튼 스타일 */
+.print-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.print-button:hover {
+    background-color: #45a049;
+}
+
+/* 주간 일정표 스타일 */
+.weekly-calendar {
+    width: 297mm; /* A4 가로 폭 */
+    height: 210mm; /* A4 세로 높이 */
+    margin: 0 auto 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    page-break-after: always;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* 캘린더 헤더 수정 - 한 줄로 표시하고 높이 줄이기 */
+.calendar-header {
+    display: flex;
+    justify-content: center; /* 중앙 정렬로 변경 */
+    align-items: center;
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px 5px 0 0;
+    height: 30px;
+    position: relative; /* 포지셔닝 컨텍스트 설정 */
+}
+
+.calendar-title {
+    font-size: 18px; /* 글꼴 크기 키움 */
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    position: absolute; /* 절대 위치 지정 */
+    left: 50%;
+    transform: translateX(-50%); /* 가운데 정렬 */
+}
+
+.calendar-week {
+    font-size: 14px;
+    margin: 0;
+    position: absolute; /* 절대 위치 지정 */
+    right: 15px; /* 오른쪽 여백 */
+}
+
+/* 달력 그리드 - 월요일부터 토요일까지 6일, 너비 맞춤 */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; /* 월요일부터 토요일까지 6열 균등 배분 */
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    width: 100%;
+}
+
+/* 일요일 열 숨기기 (첫 번째 자식 대신 특정 선택자로 변경) */
+.day-column.sunday {
+    display: none;
+}
+
+/* 요일 열 및 헤더 스타일 통일 */
+.day-column {
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.day-column:last-child {
+    border-right: none;
+}
+
+.day-header {
+    padding: 2px 2px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f5;
+    font-weight: bold;
+    font-size: 0.9em;
+    height: 22px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.weekday, .date {
+    display: inline-block;
+    margin: 0 2px;
+}
+
+/* 날짜 스타일 (왼쪽) */
+.date {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* 요일 스타일 (오른쪽) */
+.weekday {
+    font-size: 12px;
+    color: #666;
+}
+
+/* 시간 라벨 통일된 스타일 */
+.time-label {
+    font-size: 10px;
+    margin: 0;
+    padding: 2px 3px;
+    font-weight: bold;
+    color: #2c3e50;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 차수 강조 스타일 */
+.time-label::before {
+    content: "";
+    display: inline-block;
+    width: 3px;
+    height: 10px;
+    background-color: #4CAF50;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+/* 활동명 통일된 스타일 */
+.activity {
+    display: inline-block;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-radius: 15px;
+    padding: 2px 5px;
+    margin: 1px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.time-slot {
+    padding: 2px;
+    border-bottom: 1px solid #eee;
+    font-size: 11px;
+    overflow: hidden;
+}
+
+.time-slot:last-child {
+    border-bottom: none;
+}
+
+/* 모든 활동 섹터의 높이를 동일하게 설정 */
+.slot-1, .slot-2, .slot-3, .slot-4, .slot-5 {
+    flex: 1; /* 모든 슬롯 동일 비율로 공간 차지 */
+}
+
+.slot-lunch, .slot-dinner {
+    height: 4%; /* 식사 시간 슬롯 높이 줄임 */
+    background-color: rgba(76, 175, 80, 0.05);
+    min-height: 22px; /* 최소 높이 설정 */
+    border-radius: 2px;
+    padding: 1px 2px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 식사 시간 표시 스타일 */
+.slot-lunch .time-label,
+.slot-dinner .time-label {
+    font-size: 9px;
+    margin: 0px 0 0 2px;
+    padding: 1px 2px;
+    border-left: 2px solid #4CAF50;
+    flex: 0 0 auto;
+}
+
+/* 식사 시간 입력 필드 스타일 */
+.meal-time-input {
+    font-size: 9px;
+    padding: 1px 2px;
+    width: 90px;
+    height: 16px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-right: 3px;
+    color: #333;
+    background-color: white;
+}
+
+/* 사용하지 않는 클래스 삭제 및 레이아웃 추가 개선 */
+.activity-time, 
+.activity-name, 
+.activity-info, 
+.activity-location,
+.activity-group .activity-time,
+.activity-group .activity,
+.activity-group .activity:last-child,
+.activity-group .activity-name,
+.activity-group .activity-info,
+.activity-group .activity-location {
+    display: none; /* 사용하지 않는 클래스들 숨김 처리 */
+}
+
+/* 활동 그룹 스타일 */
+.activity-group {
+    margin-bottom: 5px;
+    padding: 2px;
+}
+
+.activity-group .activity-time {
+    font-weight: bold;
+    font-size: 11px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px dashed rgba(76, 175, 80, 0.3);
+}
+
+.activity-group .activity {
+    background-color: transparent;
+    border-left: none;
+    border-radius: 0;
+    padding: 2px 5px;
+    margin-bottom: 3px;
+    border-bottom: 1px dotted #eee;
+}
+
+.activity-group .activity:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.activity-group .activity-name {
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.activity-group .activity-info,
+.activity-group .activity-location {
+    font-size: 9px;
+    color: #666;
+}
+
+/* 인쇄 설정 */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 5mm; /* 상하좌우 동일한 여백 지정 */
+    }
+    
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    body::before {
+        display: none;
+    }
+    
+    .control-panel {
+        display: none;
+    }
+    
+    .weekly-calendar {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        page-break-after: always;
+        border-radius: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+    
+    .calendar-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        width: 100%;
+        height: calc(100% - 30px); /* 헤더 높이 제외 */
+    }
+    
+    .calendar-header {
+        border-radius: 0;
+        height: 30px;
+    }
+    
+    .custom-alert, .holiday-modal {
+        display: none !important;
+    }
+    
+    /* 인쇄 시 입력 필드 처리 */
+    .meal-time-input {
+        border: none;
+        background: transparent;
+        font-size: 9px;
+        color: #333;
+        font-weight: normal;
+    }
+    
+    /* 인쇄 시 모든 요소가 보이도록 높이 조정 */
+    .day-content {
+        height: 100%;
+    }
+    
+    .slot-1, .slot-2, .slot-3, .slot-4, .slot-5 {
+        flex: 1;
+    }
+    
+    .slot-lunch, .slot-dinner {
+        height: 20px;
+        min-height: 20px;
+    }
+    
+    /* 개선된 인쇄 설정 - printing-mode 클래스 사용 */
+    body.printing-mode #calendarContainer {
+        display: block;
+    }
+    
+    body.printing-mode .weekly-calendar {
+        display: flex;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: 287mm; /* A4 너비(297mm)에서 좌우 여백(5mm*2)을 뺀 값 */
+        height: 200mm; /* A4 높이(210mm)에서 상하 여백(5mm*2)을 뺀 값 */
+        margin: 0 auto; /* 가운데 정렬 */
+        padding: 0;
+        box-sizing: border-box;
+        overflow: visible;
+        page-break-after: always;
+        page-break-inside: avoid;
+    }
+    
+    body.printing-mode .calendar-header {
+        width: 100%;
+        box-sizing: border-box;
+        height: 35px; /* 높이 키움 */
+        padding: 8px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 2px; /* 여백 추가 */
+    }
+    
+    body.printing-mode .calendar-grid {
+        flex: 1;
+        width: 100%;
+        height: calc(100% - 37px); /* 헤더 높이 + 여백에 맞춰 조정 */
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body.printing-mode .weekly-calendar:last-child {
+        page-break-after: auto;
+    }
+    
+    body.printing-mode html, body.printing-mode body {
+        margin: 0; /* 페이지 마진으로 대체하므로 0으로 설정 */
+        padding: 0;
+    }
+    
+    body.printing-mode .calendar-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+        text-align: center;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* 알림 모달 스타일 */
+.custom-alert {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.custom-alert-content {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    animation: slideInUp 0.3s ease;
+}
+
+.custom-alert-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.alert-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+.custom-alert-header span {
+    flex-grow: 1;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.close-alert {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.close-alert:hover {
+    color: #333;
+}
+
+.custom-alert-body {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.custom-alert-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.alert-confirm-btn, .alert-cancel-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.alert-confirm-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.alert-confirm-btn:hover {
+    background-color: #45a049;
+}
+
+.alert-cancel-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.alert-cancel-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* 요일별 색상 구분 - 토요일만 파란색 유지 */
+/* 토요일 (마지막 열) - 파란색 */
+.day-column.saturday .day-header {
+    color: #1976d2; /* 파란색 */
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+.day-column.saturday .date {
+    color: #1976d2; /* 파란색 */
+}
+
+/* 공휴일 표시 스타일 */
+.holiday-date {
+    position: relative;
+    color: #e53935 !important; /* 공휴일 날짜는 빨간색으로 표시 */
+}
+
+.holiday-date::after {
+    content: "공휴일";
+    position: absolute;
+    top: -3px;
+    right: 3px;
+    font-size: 7px;
+    color: #ffffff;
+    background-color: #e53935;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: normal;
+}
+
+/* 공휴일 열 헤더 스타일 */
+.day-column:not(:first-child):not(:last-child) .day-header.holiday {
+    color: #e53935;
+    background-color: rgba(229, 57, 53, 0.05);
+}
+
+/* 나머지 요일 활동 표시 개선 */
+.day-column:not(:first-child) .time-slot {
+    padding: 3px 5px;
+}
+
+.day-column:not(:first-child) .activity {
+    margin: 3px;
+}
+
+/* 일요일 열 내용 표시 스타일 */
+.day-column:first-child .time-label {
+    font-size: 10px;
+    margin: 3px 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.day-column:first-child .activity {
+    padding: 3px 5px;
+    margin: 1px;
+    font-size: 9px;
+}
+
+/* 월~토 요일 컨텐츠 영역 설정 */
+.day-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 22px); /* 헤더 높이 제외 */
+}
+
+/* 공휴일 요일 헤더 스타일 */
+.day-header.holiday {
+    color: #e53935; /* 빨간색 */
+    background-color: rgba(229, 57, 53, 0.05);
+}
+
+.day-header.holiday .date,
+.day-header.holiday .weekday,
+.day-header.holiday .holiday-name {
+    color: #e53935; /* 빨간색 */
+}
+
+/* 공휴일 이름 스타일 */
+.holiday-name {
+    font-size: 10px;
+    display: block;
+    margin-top: 1px;
+    font-weight: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 공휴일 입력 모달 스타일 */
+.holiday-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.holiday-modal-content {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    animation: slideInUp 0.3s ease;
+}
+
+.holiday-modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #4CAF50; /* 초록색 배경 */
+    margin: -20px -20px 15px -20px;
+    padding: 15px 20px 15px 20px;
+    border-radius: 8px 8px 0 0;
+}
+
+.holiday-modal-header h3 {
+    flex-grow: 1;
+    font-size: 18px;
+    font-weight: bold;
+    color: white; /* 텍스트 색상 흰색으로 변경 */
+    margin: 0;
+}
+
+.holiday-modal-header .close-alert {
+    color: white; /* 닫기 버튼 색상 흰색으로 변경 */
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.holiday-modal-body {
+    margin-bottom: 20px;
+}
+
+.holiday-modal-body input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.holiday-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.holiday-modal-footer button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.holiday-save-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.holiday-save-btn:hover {
+    background-color: #45a049;
+}
+
+.holiday-cancel-btn {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.holiday-cancel-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.holiday-remove-btn {
+    background-color: #f44336;
+    color: white;
+    margin-right: auto;
+}
+
+.holiday-remove-btn:hover {
+    background-color: #e53935;
+} 
